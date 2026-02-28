@@ -8,36 +8,18 @@ from figs.simulator import Simulator
 from figs.control.vehicle_rate_mpc import VehicleRateMPC
 
 import os
-os.environ["ACADOS_SOURCE_DIR"] = "/data/<username>/FiGS-Standalone/acados"
-os.environ["LD_LIBRARY_PATH"] = os.getenv("LD_LIBRARY_PATH", "") + "/data/<username>/FiGS-Standalone/acados/lib"
-
 import numpy as np
-
-# print(os.getenv("ACADOS_SOURCE_DIR"))
-# print(os.getenv("LD_LIBRARY_PATH"))
-
-import ctypes
-ctypes.CDLL("/data/<username>/FiGS-Standalone/acados/lib/libqpOASES_e.so")
-ctypes.CDLL("/data/<username>/FiGS-Standalone/acados/lib/libblasfeo.so")
-ctypes.CDLL("/data/<username>/FiGS-Standalone/acados/lib/libhpipm.so")
-ctypes.CDLL("/data/<username>/FiGS-Standalone/acados/lib/libacados.so")
 
 #%%
 # FiGS Capture Examples (scene_name, capture_name)
 capture_examples = [
-    # 'backroom'
-    # 'sv_1007_gemsplat'
-    'packardpark'
+    'flightroom_ssv_exp'
 ]
 
 # FiGS Simulate Examples (scene_name, rollout_name, frame_name, policy_name, course_name)
+# NOTE: scene_name will be updated after Step F1 completes with the actual splatfacto timestamp path
 simulate_examples = [
-    # ('flightroom', 'baseline', 'carl', 'vrmpc_fr', 'extended_traj_track'),
-    # ('backroom',   'baseline', 'carl', 'vrmpc_fr', 'cluttered_env_track'),
-    # ('mid_gate',   'baseline', 'carl', 'vrmpc_fr', 'robustness_track'),
-    ('packardpark',   'baseline', 'carl', 'vrmpc_rrt', 'track_spiral')
-    # ('sv_917_3_left_gemsplat', 'baseline', 'carl', 'vrmpc_rrt', 'inward_spiral'),
-    # ('sv_1007_gemsplat', 'baseline', 'carl', 'vrmpc_fr', 'robustness_track'),
+    ('flightroom_ssv_exp/splatfacto/2026-02-23_015136',   'baseline', 'carl', 'vrmpc_rrt', 'track_spiral')
 ]
 
 # query = 'ladder'

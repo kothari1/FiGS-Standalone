@@ -1,9 +1,9 @@
-visual_mode: "semantic_depth"
+# visual_mode: "semantic_depth"  # Requires gemsplat model with CLIP features
 # perception_type: "clipseg"
 # perception_type: "amradio"
-perception_type: "similarity"
+# perception_type: "similarity"
 
-# visual_mode: "rgb"
+visual_mode: "rgb"
 # perception_mode: "similarity"
 
 # Extra model outputs to capture during simulation (empty list or absent = none)

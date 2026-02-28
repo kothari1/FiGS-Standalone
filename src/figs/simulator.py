@@ -88,9 +88,10 @@ class Simulator:
     
     def load_perception(self):
         with open(self.perception_path, 'r') as file:
-            perception_type = yaml.safe_load(file)
-            visual_mode = perception_type.get("visual_mode")
-            perception_type = perception_type.get("perception_type")
+            perception_config = yaml.safe_load(file)
+            visual_mode = perception_config.get("visual_mode")
+            perception_type = perception_config.get("perception_type")
+            extra_channels = perception_config.get("extra_channels", [])
 
         if visual_mode not in ["rgb","semantic_depth"]:
             raise ValueError(f"Invalid visual mode: {visual_mode}")
@@ -100,6 +101,9 @@ class Simulator:
             print(f"rendering simulation with {perception_type}.")
         else:
             self.conFiG["perception"] = "rgb"
+            self.conFiG["perception_type"] = None
+
+        self.conFiG["extra_channels"] = extra_channels
 
     def load_scene(self, scene_name:str):
         """
@@ -284,10 +288,8 @@ class Simulator:
                 Tb2w = th.xv_to_T(xcr)
                 T_c2w = Tb2w@T_c2b
 
-                extra_ch = self.gsplat.extra_channels
-
                 if vision_processor is not None and perception == "semantic_depth" and perception_type == "clipseg" and query is not None:
-                    image_dict = self.gsplat.render_rgb(camera,T_c2w, extra_channels=extra_ch)
+                    image_dict = self.gsplat.render_rgb(camera,T_c2w)
                     icr_rgb = image_dict["rgb"]
                     icr_depth = image_dict["depth"]
                     start = time.time()
@@ -296,7 +298,7 @@ class Simulator:
                     if verbose:
                         times.append(end-start)
                 elif perception == "semantic_depth" and perception_type != "clipseg" and query is not None:
-                    image_dict = self.gsplat.render_rgb(camera,T_c2w,query, extra_channels=extra_ch)
+                    image_dict = self.gsplat.render_rgb(camera,T_c2w,query)
                     icr = image_dict["semantic"]
                     icr_rgb = image_dict["rgb"]
                     icr_depth = image_dict["depth"]
@@ -304,7 +306,7 @@ class Simulator:
                     if validation:
                         icr_val, _ = vision_processor.process(image=icr_rgb, prompt=query)
                 else:
-                    image_dict = self.gsplat.render_rgb(camera,T_c2w, extra_channels=extra_ch)
+                    image_dict = self.gsplat.render_rgb(camera,T_c2w)
                     icr = image_dict["rgb"]
 
                 # Add sensor noise and syncronize estimated state
