@@ -3,8 +3,8 @@
 # perception_type: "amradio"
 # perception_type: "similarity"
 
-visual_mode: "rgb"
-# perception_mode: "similarity"
+visual_mode: "semantic_depth"
+perception_type: "similarity"
 
 # Extra model outputs to capture during simulation (empty list or absent = none)
 # Available channels depend on the trained model (e.g. nbv-splat: "view_metric")

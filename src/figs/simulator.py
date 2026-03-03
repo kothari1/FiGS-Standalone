@@ -121,11 +121,25 @@ class Simulator:
         yaml_configs = list(search_path.rglob("*.yml"))
     
         if len(yaml_configs) == 0:
-            raise ValueError(f"The search path '{search_path}' did not return any configurations.")
+            # Fallback to DATA_PATH if available
+            data_path = os.environ.get("DATA_PATH")
+            if data_path:
+                search_path = Path(data_path) / "trained_gsplats" / scene_name / 'outputs'
+                if not search_path.exists():
+                     search_path = Path(data_path) / "trained_gsplats" / scene_name
+                yaml_configs = list(search_path.rglob("*.yml"))
+                work_path = search_path.parent if search_path.name == 'outputs' else search_path
+                
+            if len(yaml_configs) == 0:
+                raise ValueError(f"The search path '{search_path}' did not return any configurations.")
         elif len(yaml_configs) > 1:
             raise ValueError(f"The search path '{search_path}' returned multiple configurations. Please specify a unique configuration within the directory.")
-        else:
-            gsplat_config = {"name":scene_name,"path":yaml_configs[0]}
+        
+        # In case the fallback found multiple configs
+        if len(yaml_configs) > 1:
+            raise ValueError(f"The search path '{search_path}' returned multiple configurations. Please specify a unique configuration within the directory.")
+
+        gsplat_config = {"name":scene_name,"path":yaml_configs[0]}
 
         # Load GSplat (from the workspace directory to avoid path issues)
         os.chdir(work_path)
@@ -293,7 +307,7 @@ class Simulator:
                     icr_rgb = image_dict["rgb"]
                     icr_depth = image_dict["depth"]
                     start = time.time()
-                    icr, _ = vision_processor.process(image=icr_rgb, prompt=query)
+                    icr, _ = vision_processor.clipseg_hf_inference(image=icr_rgb, prompt=query)
                     end = time.time()
                     if verbose:
                         times.append(end-start)
@@ -304,7 +318,7 @@ class Simulator:
                     icr_depth = image_dict["depth"]
 
                     if validation:
-                        icr_val, _ = vision_processor.process(image=icr_rgb, prompt=query)
+                        icr_val, _ = vision_processor.clipseg_hf_inference(image=icr_rgb, prompt=query)
                 else:
                     image_dict = self.gsplat.render_rgb(camera,T_c2w)
                     icr = image_dict["rgb"]
@@ -346,7 +360,7 @@ class Simulator:
                 # Store rendered channels dynamically
                 if query is not None:
                     image_dict["semantic"] = icr  # may be from vision_processor
-                    if validation and perception_type != "clipseg":
+                    if validation and perception == "semantic_depth" and perception_type != "clipseg":
                         image_dict["validation"] = icr_val
 
                 for ch_name, ch_img in image_dict.items():
