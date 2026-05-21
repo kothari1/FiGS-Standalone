@@ -35,3 +35,4 @@ configs/course/*
 !install-figs.sh
 **/splatfacto/
 **/gemsplat/
+V-LEAD.code-workspace
