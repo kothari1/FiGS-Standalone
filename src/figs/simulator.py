@@ -1,6 +1,7 @@
 import os
 import shutil
 import json
+import tempfile
 import yaml
 import time
 import statistics
@@ -201,19 +202,15 @@ class Simulator:
         
         # Some useful intermediate variables
         drn_spec = generate_specifications(frame_config)
-        sim_json = 'figs_sim_solver.json'
-
         # Generate the simulator
         sim = AcadosSim()
-        sim.model = export_quadcopter_ode_model(drn_spec["m"],drn_spec["tn"])  
+        sim.model = export_quadcopter_ode_model(drn_spec["m"],drn_spec["tn"])
         sim.solver_options.T = 1/self.conFiG["rollout"]["frequency"]
         sim.solver_options.integrator_type = 'IRK'
 
-        solver = AcadosSimSolver(sim, json_file=sim_json, verbose=False)
-
-        # Clean up the ACADOS generation files
-        os.remove(os.path.join(os.getcwd(),sim_json))
-        shutil.rmtree(sim.code_export_directory)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            sim.code_export_directory = os.path.join(tmp_dir, 'c_generated_code')
+            solver = AcadosSimSolver(sim, json_file=os.path.join(tmp_dir, 'figs_sim_solver.json'), verbose=False)
         
         # Update attribute(s)
         self.solver = solver

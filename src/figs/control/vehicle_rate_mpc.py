@@ -1,6 +1,7 @@
 import time
 import shutil
 import os
+import tempfile
 import numpy as np
 import scipy.linalg
 import figs.tsplines.min_snap as ms
@@ -96,7 +97,6 @@ class VehicleRateMPC(BaseController):
         nx,nu = drn_spec["nx"], drn_spec["nu"]
 
         ny,ny_e = nx+nu,nx
-        solver_json = 'figs_ocp_solver.json'
         
         # =====================================================================
         # Compute Desired Trajectory
@@ -158,11 +158,9 @@ class VehicleRateMPC(BaseController):
         ocp.solver_options.tf = Nhn/hz_ctl
         ocp.solver_options.qp_solver_warm_start = 1
 
-        solver = AcadosOcpSolver(ocp,json_file=solver_json,verbose=False)
-        
-        # Clear the generated code
-        os.remove(os.path.join(os.getcwd(),solver_json))
-        shutil.rmtree(ocp.code_export_directory)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            ocp.code_export_directory = os.path.join(tmp_dir, 'c_generated_code')
+            solver = AcadosOcpSolver(ocp, json_file=os.path.join(tmp_dir, 'figs_ocp_solver.json'), verbose=False)
 
         # =====================================================================
         # Controller Variables
