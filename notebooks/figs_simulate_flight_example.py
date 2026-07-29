@@ -33,11 +33,11 @@ import ctypes
 
 # FiGS Simulate Examples (scene_name, rollout_name, frame_name, policy_name, course_name)
 simulate_examples = [
-    # ('flightroom', 'baseline', 'carl', 'vrmpc_fr', 'extended_traj_track'),
+    ('backroom', 'baseline', 'carl', 'vrmpc_fr', 'track_spiral'),
     # ('backroom',   'baseline', 'carl', 'vrmpc_fr', 'cluttered_env_track'),
     # ('mid_gate',   'baseline', 'carl', 'vrmpc_fr', 'robustness_track'),
     # ('packardpark',   'baseline', 'carl', 'vrmpc_rrt', 'track_spiral')
-    ('flightroom_ssv_exp/splatfacto/2026-02-02_140315',   'baseline', 'carl', 'vrmpc_rrt', 'track_spiral')
+    #('flightroom_ssv_exp/splatfacto/2026-02-02_140315',   'baseline', 'carl', 'vrmpc_rrt', 'track_spiral')
     # ('sv_917_3_left_gemsplat', 'baseline', 'carl', 'vrmpc_rrt', 'inward_spiral'),
     # ('sv_1007_gemsplat', 'baseline', 'carl', 'vrmpc_fr', 'robustness_track'),
 ]
